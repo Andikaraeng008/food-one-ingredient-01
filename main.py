@@ -1,20 +1,21 @@
-"""Copy the bundled food picture to the output directory as entry.png."""
+"""Copy the one-ingredient picture to the output directory as entry.png."""
 
 import os
 import shutil
+from pathlib import Path
 
 
-# The picture is shipped in the repo; the program only copies it,
-# so two runs always produce byte-identical output.
+# The picture is a fixed asset: this program only copies it to the output
+# directory, so every run produces exactly the same bytes.
 def main():
-    here = os.path.dirname(os.path.abspath(__file__))
-    source = os.path.join(here, "picture.png")
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(out_dir, exist_ok=True)
-    dest = os.path.join(out_dir, "entry.png")
-    shutil.copyfile(source, dest)
-    size = os.path.getsize(dest)
-    print(f"Wrote {dest} ({size} bytes)")
+    here = Path(__file__).resolve().parent
+    source = here / "picture.png"
+    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    destination = out_dir / "entry.png"
+    shutil.copyfile(source, destination)
+    size = destination.stat().st_size
+    print(f"Wrote {destination} ({size} bytes)")
 
 
 if __name__ == "__main__":
